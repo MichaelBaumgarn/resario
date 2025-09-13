@@ -1,22 +1,31 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import ImageUpload from '@/components/ImageUpload';
-import ObjectDetectionResults from '@/components/ObjectDetectionResults';
-import { DetectionResult } from '@/types/detection';
+import { useState } from "react";
+import ImageUpload from "@/components/ImageUpload";
+import ObjectDetectionResults from "@/components/ObjectDetectionResults";
+import { DetectionResult } from "@/types/detection";
 
 export default function Home() {
-  const [detectionResults, setDetectionResults] = useState<DetectionResult[]>([]);
-  const [originalImage, setOriginalImage] = useState<string>('');
+  const [detectionResults, setDetectionResults] = useState<DetectionResult[]>(
+    []
+  );
+  const [originalImage, setOriginalImage] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleDetectionComplete = (results: DetectionResult[], imageUrl: string) => {
+  const handleDetectionComplete = (
+    results: DetectionResult[],
+    imageUrl: string
+  ) => {
     setDetectionResults(results);
     setOriginalImage(imageUrl);
   };
 
   const handleLoadingChange = (loading: boolean) => {
     setIsLoading(loading);
+  };
+
+  const handleResultsUpdate = (updatedResults: DetectionResult[]) => {
+    setDetectionResults(updatedResults);
   };
 
   return (
@@ -33,7 +42,7 @@ export default function Home() {
 
         <div className="max-w-4xl mx-auto">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
-            <ImageUpload 
+            <ImageUpload
               onDetectionComplete={handleDetectionComplete}
               onLoadingChange={handleLoadingChange}
             />
@@ -52,9 +61,10 @@ export default function Home() {
 
           {detectionResults.length > 0 && originalImage && (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-              <ObjectDetectionResults 
+              <ObjectDetectionResults
                 results={detectionResults}
                 originalImage={originalImage}
+                onResultsUpdate={handleResultsUpdate}
               />
             </div>
           )}

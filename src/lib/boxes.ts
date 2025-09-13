@@ -22,6 +22,7 @@ export function scaleDetections(
 ) {
   const sx = displayW / naturalW;
   const sy = displayH / naturalH;
+
   return dets.map((d) => {
     const b = clampBox(d.box, naturalW, naturalH);
     return {

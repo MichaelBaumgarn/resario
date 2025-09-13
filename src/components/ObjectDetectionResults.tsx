@@ -8,11 +8,13 @@ import DetectionsCanvas, { DetectionsCanvasHandle } from "./DetectionsCanvas";
 interface ObjectDetectionResultsProps {
   results: DetectionResult[];
   originalImage: string;
+  onResultsUpdate?: (results: DetectionResult[]) => void;
 }
 
 export default function ObjectDetectionResults({
   results,
   originalImage,
+  onResultsUpdate,
 }: ObjectDetectionResultsProps) {
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -34,26 +36,18 @@ export default function ObjectDetectionResults({
   useEffect(() => {
     const img = new Image();
     img.onload = () => {
-      console.log("Image loaded:", {
-        src: originalImage,
-        naturalWidth: img.naturalWidth,
-        naturalHeight: img.naturalHeight,
-      });
       setImageDimensions({
         width: img.naturalWidth,
         height: img.naturalHeight,
       });
-    };
-    img.onerror = (e) => {
-      console.error("Image failed to load:", e, originalImage);
     };
     img.src = originalImage;
   }, [originalImage]);
 
   useEffect(() => {
     if (imageDimensions.width > 0 && imageDimensions.height > 0) {
-      const maxWidth = 900;
-      const maxHeight = 600;
+      const maxWidth = 1000;
+      const maxHeight = 750;
       const aspectRatio = imageDimensions.height / imageDimensions.width;
 
       let displayWidth = Math.min(maxWidth, imageDimensions.width);
@@ -63,6 +57,15 @@ export default function ObjectDetectionResults({
         displayHeight = maxHeight;
         displayWidth = displayHeight / aspectRatio;
       }
+
+      console.log("Calculated display dimensions:", {
+        originalDimensions: imageDimensions,
+        maxWidth,
+        maxHeight,
+        aspectRatio,
+        calculatedWidth: displayWidth,
+        calculatedHeight: displayHeight,
+      });
 
       setDisplayDimensions({ width: displayWidth, height: displayHeight });
     }
@@ -78,6 +81,22 @@ export default function ObjectDetectionResults({
       ymax: result.box.ymax,
     },
   });
+
+  const mapToDetectionResult = (detection: Detection): DetectionResult => ({
+    label: detection.label,
+    score: detection.score,
+    box: {
+      xmin: detection.box.xmin,
+      ymin: detection.box.ymin,
+      xmax: detection.box.xmax,
+      ymax: detection.box.ymax,
+    },
+  });
+
+  const handleDetectionUpdate = (detections: Detection[]) => {
+    const updatedResults = detections.map(mapToDetectionResult);
+    onResultsUpdate?.(updatedResults);
+  };
 
   const getRandomColor = (index: number) => {
     const colors = [
@@ -123,6 +142,7 @@ export default function ObjectDetectionResults({
             displayHeight={displayDimensions.height}
             detections={results.map(mapToDetection)}
             scoreThreshold={0.3}
+            onDetectionUpdate={handleDetectionUpdate}
           />
         </div>
       )}

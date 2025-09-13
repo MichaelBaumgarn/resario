@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { DetectionResult, HuggingFaceResponse } from "@/types/detection";
+import { DetectionResult } from "@/types/detection";
 import sharp from "sharp";
 
 export async function POST(request: NextRequest) {
@@ -22,42 +22,21 @@ export async function POST(request: NextRequest) {
     console.log("🔄 API Route: Processing image...");
     const imageBuffer = await image.arrayBuffer();
 
-    let targetSize = 512;
-    let quality = 60;
+    const originalImage = sharp(Buffer.from(imageBuffer));
 
-    if (imageBuffer.byteLength > 5000000) {
-      targetSize = 256;
-      quality = 40;
-      console.log(
-        "📏 API Route: Very large image detected, using aggressive resizing"
-      );
-    }
-
-    const resizedBuffer = await sharp(Buffer.from(imageBuffer))
-      .resize(targetSize, targetSize, {
+    const resizedBuffer = await originalImage
+      .resize(512, 512, {
         fit: "inside",
         background: { r: 255, g: 255, b: 255, alpha: 1 },
       })
       .jpeg({
-        quality: quality,
+        quality: 60,
         progressive: true,
-        mozjpeg: true,
       })
       .toBuffer();
 
-    console.log(
-      `📏 API Route: Image resized from ${imageBuffer.byteLength} to ${
-        resizedBuffer.length
-      } bytes (${Math.round(
-        (resizedBuffer.length / imageBuffer.byteLength) * 100
-      )}% of original)`
-    );
-
     const base64Image = resizedBuffer.toString("base64");
     const dataUrl = `data:image/jpeg;base64,${base64Image}`;
-    console.log(
-      `📊 API Route: Base64 conversion complete - ${base64Image.length} characters`
-    );
 
     console.log("🌐 API Route: Making request to Hugging Face API...");
     console.log(
@@ -127,24 +106,24 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const huggingFaceResults: any[] = await huggingFaceResponse.json();
-      console.log(
-        `📋 API Route: Received ${huggingFaceResults.length} detection results`
-      );
+      const huggingFaceResults: Array<{
+        label: string;
+        score: number;
+        box: { xmin: number; ymin: number; xmax: number; ymax: number };
+      }> = await huggingFaceResponse.json();
 
       const detectionResults: DetectionResult[] = huggingFaceResults
-        .filter((result: any) => result.score > 0.3)
-        .map((result: any) => ({
+        .filter((result) => result.score > 0.3)
+        .map((result) => ({
           label: result.label,
           score: result.score,
           box: result.box,
         }));
 
-      console.log(
-        `🎯 API Route: Filtered to ${detectionResults.length} high-confidence detections`
-      );
-      console.log("✅ API Route: Returning real object detection results");
-      return NextResponse.json(detectionResults);
+      return NextResponse.json({
+        detections: detectionResults,
+        processedImage: dataUrl,
+      });
     } catch (error) {
       clearTimeout(timeoutId);
       if ((error as Error).name === "AbortError") {

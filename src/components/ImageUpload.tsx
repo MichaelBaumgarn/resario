@@ -88,9 +88,13 @@ export default function ImageUpload({
         throw new Error("Detection failed");
       }
 
-      const results: DetectionResult[] = await response.json();
-      console.log("Detection results received:", results);
-      onDetectionComplete(results, previewUrl);
+      const responseData = await response.json();
+      console.log("Detection results received:", responseData);
+
+      const results = responseData.detections || responseData;
+      const processedImage = responseData.processedImage;
+
+      onDetectionComplete(results, processedImage);
     } catch (error) {
       console.error("Error detecting objects:", error);
       alert("Failed to detect objects. Please try again.");
