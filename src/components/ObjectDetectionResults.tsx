@@ -8,13 +8,11 @@ import DetectionsCanvas, { DetectionsCanvasHandle } from "./DetectionsCanvas";
 interface ObjectDetectionResultsProps {
   results: DetectionResult[];
   originalImage: string;
-  onResultsUpdate?: (results: DetectionResult[]) => void;
 }
 
 export default function ObjectDetectionResults({
   results,
   originalImage,
-  onResultsUpdate,
 }: ObjectDetectionResultsProps) {
   const [imageDimensions, setImageDimensions] = useState({
     width: 0,
@@ -82,22 +80,6 @@ export default function ObjectDetectionResults({
     },
   });
 
-  const mapToDetectionResult = (detection: Detection): DetectionResult => ({
-    label: detection.label,
-    score: detection.score,
-    box: {
-      xmin: detection.box.xmin,
-      ymin: detection.box.ymin,
-      xmax: detection.box.xmax,
-      ymax: detection.box.ymax,
-    },
-  });
-
-  const handleDetectionUpdate = (detections: Detection[]) => {
-    const updatedResults = detections.map(mapToDetectionResult);
-    onResultsUpdate?.(updatedResults);
-  };
-
   const getRandomColor = (index: number) => {
     const colors = [
       "#FF6B6B",
@@ -142,7 +124,6 @@ export default function ObjectDetectionResults({
             displayHeight={displayDimensions.height}
             detections={results.map(mapToDetection)}
             scoreThreshold={0.3}
-            onDetectionUpdate={handleDetectionUpdate}
           />
         </div>
       )}

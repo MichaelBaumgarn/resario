@@ -24,10 +24,6 @@ export default function Home() {
     setIsLoading(loading);
   };
 
-  const handleResultsUpdate = (updatedResults: DetectionResult[]) => {
-    setDetectionResults(updatedResults);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4 py-8">
@@ -64,7 +60,6 @@ export default function Home() {
               <ObjectDetectionResults
                 results={detectionResults}
                 originalImage={originalImage}
-                onResultsUpdate={handleResultsUpdate}
               />
             </div>
           )}
