@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     console.log("🌐 API Route: Making request to Hugging Face API...");
     console.log(
       `🔑 API Route: Using API key: ${
-        process.env.HUGGINGFACE_API_KEY ? "SET" : "NOT SET"
+        process.env.HF_API_KEY ? "SET" : "NOT SET"
       }`
     );
 
@@ -55,9 +55,7 @@ export async function POST(request: NextRequest) {
         "https://router.huggingface.co/hf-inference/models/facebook/detr-resnet-101",
         {
           headers: {
-            Authorization: `Bearer ${
-              process.env.HUGGINGFACE_API_KEY || "hf_demo"
-            }`,
+            Authorization: `Bearer ${process.env.HF_API_KEY || "hf_demo"}`,
             "Content-Type": "image/jpeg",
           },
           method: "POST",

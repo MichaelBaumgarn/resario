@@ -14,35 +14,40 @@ A Next.js application that provides an easy and interactive way to perform objec
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Hugging Face API key (free)
 
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd resario
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables:
-Create a `.env.local` file in the root directory:
+   Create a `.env.local` file in the root directory:
+
 ```bash
-HUGGINGFACE_API_KEY=your_api_key_here
+HF_API_KEY=your_api_key_here
 ```
 
 To get a free Hugging Face API key:
+
 1. Go to [https://huggingface.co/settings/tokens](https://huggingface.co/settings/tokens)
 2. Create a new token
 3. Copy the token to your `.env.local` file
 
 4. Run the development server:
+
 ```bash
 npm run dev
 ```
@@ -58,6 +63,7 @@ npm run dev
 ## API
 
 The app uses the Hugging Face Inference API with the `facebook/detr-resnet-50` model:
+
 - **Endpoint**: `/api/detect`
 - **Method**: POST
 - **Input**: FormData with image file
