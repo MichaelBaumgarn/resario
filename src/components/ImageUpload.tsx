@@ -39,14 +39,11 @@ export default function ImageUpload({
   };
 
   const handleFile = (file: File) => {
-    console.log("File selected:", file.name, file.type, file.size);
     if (file && file.type.startsWith("image/")) {
       setSelectedImage(file);
       const url = URL.createObjectURL(file);
       setPreviewUrl(url);
-      console.log("Image set successfully");
     } else {
-      console.log("Invalid file type:", file.type);
       alert("Please select a valid image file.");
     }
   };
@@ -66,9 +63,7 @@ export default function ImageUpload({
   };
 
   const detectObjects = async () => {
-    console.log("Detect objects clicked, selectedImage:", selectedImage);
     if (!selectedImage) {
-      console.log("No image selected");
       alert("Please select an image first.");
       return;
     }
@@ -89,14 +84,12 @@ export default function ImageUpload({
       }
 
       const responseData = await response.json();
-      console.log("Detection results received:", responseData);
 
       const results = responseData.detections || responseData;
       const processedImage = responseData.processedImage;
 
       onDetectionComplete(results, processedImage);
     } catch (error) {
-      console.error("Error detecting objects:", error);
       alert("Failed to detect objects. Please try again.");
     } finally {
       onLoadingChange(false);

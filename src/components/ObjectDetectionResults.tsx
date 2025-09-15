@@ -24,13 +24,6 @@ export default function ObjectDetectionResults({
   });
   const canvasRef = useRef<DetectionsCanvasHandle>(null);
 
-  console.log("ObjectDetectionResults render:", {
-    resultsCount: results.length,
-    originalImage: originalImage.substring(0, 50) + "...",
-    imageDimensions,
-    displayDimensions,
-  });
-
   useEffect(() => {
     const img = new Image();
     img.onload = () => {
@@ -55,15 +48,6 @@ export default function ObjectDetectionResults({
         displayHeight = maxHeight;
         displayWidth = displayHeight / aspectRatio;
       }
-
-      console.log("Calculated display dimensions:", {
-        originalDimensions: imageDimensions,
-        maxWidth,
-        maxHeight,
-        aspectRatio,
-        calculatedWidth: displayWidth,
-        calculatedHeight: displayHeight,
-      });
 
       setDisplayDimensions({ width: displayWidth, height: displayHeight });
     }
